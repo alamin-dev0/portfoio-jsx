@@ -892,6 +892,23 @@
             border-color: #75dcff;
         }
 
+        .form-note {
+            margin-top: 14px;
+            color: #8796a5;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .form-note strong {
+            color: #dbe8f2;
+        }
+
+        .form button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         .socials {
             display: flex;
 
@@ -2039,8 +2056,10 @@
 
                             </div>
 
-                            <a href="#"
-                               class="btn btn-outline">
+                            <a href="https://github.com/alamin-dev0"
+                               class="btn btn-outline"
+                               target="_blank"
+                               rel="noopener noreferrer">
 
                                 View Project →
 
@@ -2079,8 +2098,10 @@
 
                             </div>
 
-                            <a href="#"
-                               class="btn btn-outline">
+                            <a href="https://github.com/alamin-dev0"
+                               class="btn btn-outline"
+                               target="_blank"
+                               rel="noopener noreferrer">
 
                                 View Project →
 
@@ -2336,24 +2357,38 @@
 
 
                     <form class="form"
-                          id="contactForm">
+                          id="contactForm"
+                          action="https://formsubmit.co/alamin.dev01@gmail.com"
+                          method="POST"
+                          target="formSubmitFrame">
+
+                        <input type="hidden" name="_subject" value="New Portfolio Contact — Al Amin">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_replyto" id="replyTo">
 
 
                         <input
                             type="text"
+                            name="name"
                             placeholder="Your Name"
+                            autocomplete="name"
                             required
                         >
 
 
                         <input
                             type="email"
+                            name="email"
+                            id="visitorEmail"
                             placeholder="Your Email"
+                            autocomplete="email"
                             required
                         >
 
 
                         <textarea
+                            name="message"
                             placeholder="Tell me about your project..."
                             required
                         ></textarea>
@@ -2361,7 +2396,8 @@
 
                         <button
                             type="submit"
-                            class="btn btn-primary">
+                            class="btn btn-primary"
+                            id="submitBtn">
 
                             Send Message →
 
@@ -2370,22 +2406,30 @@
 
                     </form>
 
+                    <iframe
+                        name="formSubmitFrame"
+                        id="formSubmitFrame"
+                        title="Form submission"
+                        style="display:none;"
+                    ></iframe>
+
+                    <p class="form-note">Your message will be sent securely to <strong>alamin.dev01@gmail.com</strong>.</p>
 
                     <div class="socials">
 
-                        <a href="#" target="_blank">
+                        <a href="https://github.com/alamin-dev0" target="_blank" rel="noopener noreferrer">
                             GitHub
                         </a>
 
-                        <a href="#" target="_blank">
+                        <a href="https://www.linkedin.com/in/alamin-dev01" target="_blank" rel="noopener noreferrer">
                             LinkedIn
                         </a>
 
-                        <a href="#" target="_blank">
+                        <a href="https://www.facebook.com/alamin.dev01" target="_blank" rel="noopener noreferrer">
                             Facebook
                         </a>
 
-                        <a href="mailto:your@email.com">
+                        <a href="mailto:alamin.dev01@gmail.com">
                             Email
                         </a>
 
@@ -2771,29 +2815,65 @@
 
 
         /* ==================================================
-           CONTACT FORM
+           CONTACT FORM — FORMSUBMIT
         ================================================== */
 
-        const contactForm =
-            document.getElementById(
-                "contactForm"
-            );
+        const contactForm = document.getElementById("contactForm");
+        const submitButton = document.getElementById("submitBtn");
+        const visitorEmail = document.getElementById("visitorEmail");
+        const replyTo = document.getElementById("replyTo");
+        const formSubmitFrame = document.getElementById("formSubmitFrame");
 
+        if (contactForm && submitButton && formSubmitFrame) {
+            let waitingForResponse = false;
+            let responseTimer = null;
 
-        contactForm.addEventListener(
-            "submit",
-            event => {
+            formSubmitFrame.addEventListener("load", () => {
+                if (!waitingForResponse) return;
 
-                event.preventDefault();
-
-                alert(
-                    "Thanks! Your message has been received."
-                );
+                waitingForResponse = false;
+                clearTimeout(responseTimer);
 
                 contactForm.reset();
+                replyTo.value = "";
 
-            }
-        );
+                submitButton.innerHTML = "Message Sent ✓";
+
+                setTimeout(() => {
+                    submitButton.innerHTML = "Send Message →";
+                    submitButton.disabled = false;
+                }, 3000);
+            });
+
+            contactForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                if (!contactForm.checkValidity()) {
+                    contactForm.reportValidity();
+                    return;
+                }
+
+                if (waitingForResponse) return;
+
+                replyTo.value = visitorEmail.value.trim();
+                submitButton.disabled = true;
+                submitButton.innerHTML = "Sending...";
+                waitingForResponse = true;
+
+                // Native POST to FormSubmit through the hidden iframe.
+                // This avoids AJAX/CORS issues and keeps the page in place.
+                HTMLFormElement.prototype.submit.call(contactForm);
+
+                // If the service/network never responds, allow another attempt.
+                responseTimer = setTimeout(() => {
+                    if (!waitingForResponse) return;
+
+                    waitingForResponse = false;
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = "Try Again ↻";
+                }, 12000);
+            });
+        }
 
 
     </script>
