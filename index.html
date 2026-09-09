@@ -1337,6 +1337,13 @@
         }
 
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        emailjs.init({
+            publicKey: "d39YtQPJM9QckfQLS"
+        });
+    </script>
+
 </head>
 
 
@@ -2356,17 +2363,10 @@
                 <div class="glass contact-wrapper reveal">
 
 
-                    <form class="form"
-                          id="contactForm"
-                          action="https://formsubmit.co/alamin.dev01@gmail.com"
-                          method="POST"
-                          target="formSubmitFrame">
+                    <form class="form" id="contactForm">
 
-                        <input type="hidden" name="_subject" value="New Portfolio Contact — Al Amin">
-                        <input type="hidden" name="_template" value="table">
-                        <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_replyto" id="replyTo">
-
+                        <input type="hidden" name="to_email" value="alamin.dev01@gmail.com">
+                        <input type="hidden" name="subject" value="New Portfolio Contact — Al Amin">
 
                         <input
                             type="text"
@@ -2375,7 +2375,6 @@
                             autocomplete="name"
                             required
                         >
-
 
                         <input
                             type="email"
@@ -2386,32 +2385,20 @@
                             required
                         >
 
-
                         <textarea
                             name="message"
                             placeholder="Tell me about your project..."
                             required
                         ></textarea>
 
-
                         <button
                             type="submit"
                             class="btn btn-primary"
                             id="submitBtn">
-
                             Send Message →
-
                         </button>
 
-
                     </form>
-
-                    <iframe
-                        name="formSubmitFrame"
-                        id="formSubmitFrame"
-                        title="Form submission"
-                        style="display:none;"
-                    ></iframe>
 
                     <p class="form-note">Your message will be sent securely to <strong>alamin.dev01@gmail.com</strong>.</p>
 
@@ -2815,37 +2802,14 @@
 
 
         /* ==================================================
-           CONTACT FORM — FORMSUBMIT
+           CONTACT FORM — EMAILJS
         ================================================== */
 
         const contactForm = document.getElementById("contactForm");
         const submitButton = document.getElementById("submitBtn");
-        const visitorEmail = document.getElementById("visitorEmail");
-        const replyTo = document.getElementById("replyTo");
-        const formSubmitFrame = document.getElementById("formSubmitFrame");
 
-        if (contactForm && submitButton && formSubmitFrame) {
-            let waitingForResponse = false;
-            let responseTimer = null;
-
-            formSubmitFrame.addEventListener("load", () => {
-                if (!waitingForResponse) return;
-
-                waitingForResponse = false;
-                clearTimeout(responseTimer);
-
-                contactForm.reset();
-                replyTo.value = "";
-
-                submitButton.innerHTML = "Message Sent ✓";
-
-                setTimeout(() => {
-                    submitButton.innerHTML = "Send Message →";
-                    submitButton.disabled = false;
-                }, 3000);
-            });
-
-            contactForm.addEventListener("submit", (event) => {
+        if (contactForm && submitButton) {
+            contactForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
                 if (!contactForm.checkValidity()) {
@@ -2853,25 +2817,30 @@
                     return;
                 }
 
-                if (waitingForResponse) return;
-
-                replyTo.value = visitorEmail.value.trim();
                 submitButton.disabled = true;
                 submitButton.innerHTML = "Sending...";
-                waitingForResponse = true;
 
-                // Native POST to FormSubmit through the hidden iframe.
-                // This avoids AJAX/CORS issues and keeps the page in place.
-                HTMLFormElement.prototype.submit.call(contactForm);
+                try {
+                    await emailjs.sendForm(
+                        "service_t1hpsxz",
+                        "template_xcoh1yi",
+                        contactForm
+                    );
 
-                // If the service/network never responds, allow another attempt.
-                responseTimer = setTimeout(() => {
-                    if (!waitingForResponse) return;
+                    contactForm.reset();
+                    submitButton.innerHTML = "Message Sent ✓";
 
-                    waitingForResponse = false;
-                    submitButton.disabled = false;
+                    setTimeout(() => {
+                        submitButton.innerHTML = "Send Message →";
+                        submitButton.disabled = false;
+                    }, 3000);
+
+                } catch (error) {
+                    console.error("EmailJS error:", error);
                     submitButton.innerHTML = "Try Again ↻";
-                }, 12000);
+                    submitButton.disabled = false;
+                    alert("Message could not be sent. Please try again.");
+                }
             });
         }
 
