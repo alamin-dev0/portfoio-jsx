@@ -2366,6 +2366,7 @@
                     <form class="form" id="contactForm">
 
                         <input type="hidden" name="to_email" value="alamin.dev01@gmail.com">
+  <input type="hidden" name="reply_to" id="replyToEmail">
                         <input type="hidden" name="subject" value="New Portfolio Contact — Al Amin">
 
                         <input
@@ -2807,6 +2808,7 @@
 
         const contactForm = document.getElementById("contactForm");
         const submitButton = document.getElementById("submitBtn");
+const replyToEmail = document.getElementById("replyToEmail");
 
         if (contactForm && submitButton) {
             contactForm.addEventListener("submit", async (event) => {
