@@ -2835,7 +2835,13 @@
 
 
         /* ==================================================
-           CONTACT FORM — EMAILJS
+           CONTACT FORM — EMAILJS + AUTO THANK-YOU
+
+           The visitor email is submitted as {{email}}.
+           Configure EmailJS Auto-Reply on template_xcoh1yi
+           with To Email = {{email}} to automatically send
+           the thank-you email to the person who submitted
+           this form. No second frontend send is needed.
         ================================================== */
 
         const contactForm = document.getElementById("contactForm");
@@ -2861,7 +2867,7 @@ function syncFormValues() {
     if (emailValue) emailValue.value = cleanText(emailBox);
     if (phoneValue) phoneValue.value = cleanText(phoneBox).replace(/[\s-]/g, "");
     if (messageValue) messageValue.value = cleanText(messageBox);
-    if (replyToEmail) replyToEmail.value = emailValue.value;
+    if (replyToEmail) replyToEmail.value = emailValue.value.trim();
 }
 
 [emailBox, phoneBox].forEach((box) => {
@@ -2914,7 +2920,39 @@ if (contactForm && submitButton) {
         submitButton.innerHTML = "Sending...";
 
         try {
+            // 1) Send the visitor's message to Al Amin
             await emailjs.sendForm("service_t1hpsxz", "template_xcoh1yi", contactForm);
+
+            // Send automatic Thank You email to the visitor
+            try {
+                await emailjs.send("service_t1hpsxz", "template_fzbdjfn", {
+                    to_email: email,
+                    email: email,
+                    name: name,
+                    phone: phone,
+                    message: message,
+                    subject: "Thank You for Contacting Al Amin"
+                });
+            } catch (thankYouError) {
+                console.error("Thank You email error:", thankYouError);
+            }
+
+            // 2) Automatically send the Thank You email to the visitor
+            //    using template_fzbdjfn.
+            try {
+                await emailjs.send("service_t1hpsxz", "template_fzbdjfn", {
+                    to_email: email,
+                    email: email,
+                    name: name,
+                    phone: phone,
+                    message: message,
+                    subject: "Thank You for Contacting Al Amin"
+                });
+            } catch (thankYouError) {
+                // Main message was already sent, so don't show a false failure.
+                console.error("Thank-you email error:", thankYouError);
+            }
+
             contactForm.reset();
             [nameBox, emailBox, phoneBox, messageBox].forEach(box => { if (box) box.innerHTML = ""; });
             submitButton.innerHTML = "Message Sent ✓";
