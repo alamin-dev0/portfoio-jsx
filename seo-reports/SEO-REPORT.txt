@@ -1,0 +1,32 @@
+﻿AL AMIN - BILINGUAL SEO REPORT
+==============================
+
+Website: https://alamin-dev01.vercel.app/
+Date: 2026-11-15
+
+Languages:
+English + Bengali
+
+Files scanned: 12
+Audit rules per file: 24
+Total audit checks: 288
+
+Passed checks: 34
+Checks needing review: 254
+
+Keywords: 59
+
+Reports:
+seo-reports/html-audit.csv
+seo-reports/keywords-en-bn.txt
+
+SEO files:
+public/robots.txt
+public/sitemap.xml
+
+Backup:
+.\seo-backup-20261115-025349
+
+IMPORTANT:
+This is a technical audit, not a Google ranking guarantee.
+Review each result manually.
