@@ -138,10 +138,10 @@ function Contact() {
             </button>
           </form>
 
-          <p className="form-note">
+          {/* <p className="form-note">
             Your message will be sent securely to{" "}
             <strong>alamin.dev01@gmail.com</strong>.
-          </p>
+          </p> */}
 
           <div className="socials">
             <a
